@@ -1,6 +1,8 @@
 # OBD CONNECTION:
 
-### Connect using the python code. Though, it's better to know the device's port before doing anything else.
+
+
+######### Connect using the python code. Though, it's better to know the device's port before doing anything else.
 	
 import obd
 
@@ -17,7 +19,9 @@ print (ports)                    # ['/dev/ttyUSB0', '/dev/ttyUSB1']
 connection = obd.OBD(ports[0]) # connect to the first port in the list
 
 
-### Command lookup. It allows you can call up  a function. 
+
+
+######### Command lookup. It allows you can call up  a function. 
 
 import obd
 
@@ -38,32 +42,35 @@ print(c)
 
 
 
-### CHeck if a PID command exists:
+
+######### CHeck if a PID command exists:
 
 import obd
 pidval = obd.commands.has_pid(1, 12) # True
 # Let's specially check for our torque values.
 
-### Create our own OBD command!
+######### Create our own OBD command!
 
 from obd import OBDCommand, Unit
 from obd.protocols import ECU
 from obd.utils import bytes_to_int
 
-def torque(messages):
-    """ decoder for Torque messages """
-    d = messages[0].data # only operate on a single message
-    d = d[2:] # chop off mode and PID bytes
-    v = bytes_to_int(d) / 4.0  # helper function for converting byte arrays to ints
-    return v * Unit.RPM # construct a Pint Quantity
+# Define the decoding function
+def decode_torque(messages):
+    d = messages[0].data[2:]
+    A = d[0]  # first byte
+    B = d[1]  # second byte
+    value = 256 * A + B
+    return value  # convert the raw value to Newton-meters
 
-c = OBDCommand("Torque", \          # name
-               "Engine reference torque", \   # description
-               b"0163", \        # command
-               2, \              # number of return bytes to expect
-               N⋅m, \            # decoding function
-               ECU.ENGINE, \     # (optional) ECU filter
-               True)             # (optional) allow a "01" to be added for speed
+c = OBDCommand(
+    "Torque",                   # name
+    "Engine reference torque",  # description
+    b"0163",                    # command
+    2,                          # number of return bytes to expect
+    decode_torque,                        # decoding function
+    # ECU.ENGINE,                 # (optional) ECU filter
+)
 
 # By default, custom commands will be treated as "unsupported by the vehicle". There are two ways to handle this:
 
@@ -77,3 +84,25 @@ o.query(c, force=True)
 # add your command to the set of supported commands, which we'll most likely use.
 o.supported_commands.add(c)
 o.query(c)
+
+
+
+
+######### Handeling response
+
+import obd
+
+connection = obd.OBD()
+
+response = connection.query(obd.commands.MONITOR_MISFIRE_CYLINDER_2)
+
+# in the test results, lookup the result for MISFIRE_COUNT
+result = response.value.MISFIRE_COUNT
+
+# check that we got data for this test
+if not result.is_null():
+    print(result.value) # will be a Pint value
+else:
+    print("Misfire count wasn't reported")
+
+response.value.MISFIRE_MONITORING.available

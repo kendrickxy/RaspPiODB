@@ -1,5 +1,7 @@
 import obd
 
+obd.logger.setLevel(obd.logging.DEBUG)
+
 connection = obd.OBD() # auto connect
 
 ### If above doesn't work, find the bluetooth port:

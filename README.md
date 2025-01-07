@@ -32,11 +32,12 @@ cd RaspPiODB
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
-#Usage
+## Usage
 Here's how to use the project to read data from your vehicle's OBD-II system:
 
-\\\ 
+```bash
 # This is a code block in Python
 import obd
 
@@ -46,5 +47,22 @@ connection = obd.OBD()
 # Read and display real-time data
 response = connection.query(obd.commands.RPM)
 print(response.value)
+```
 
-\\\
+## Configuration
+Details on how to configure the project for your specific setup, including any required environment variables or configuration files.
+
+## Contributing
+While this project is currently for personal use, contributions are welcome in the future. Please follow the standard guidelines for pull requests and code contributions.
+
+## License
+GNU GPL v2
+
+This library is forked from:
+
+* [pyobd](https://github.com/peterh/pyobd)
+* [pyobd](https://github.com/Pbartek/pyobd-pi)
+* [python-OBD](https://github.com/brendan-w/python-OBD)
+
+## Acknowledgements
+Special thanks to the developers of python-OBD and the Raspberry Pi community for their support and resources.

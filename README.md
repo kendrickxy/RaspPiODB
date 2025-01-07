@@ -32,3 +32,19 @@ cd RaspPiODB
 
 # Install dependencies
 pip install -r requirements.txt
+
+#Usage
+Here's how to use the project to read data from your vehicle's OBD-II system:
+
+\\\ 
+# This is a code block in Python
+import obd
+
+# Connect to the OBD-II port
+connection = obd.OBD()
+
+# Read and display real-time data
+response = connection.query(obd.commands.RPM)
+print(response.value)
+
+\\\
